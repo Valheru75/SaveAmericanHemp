@@ -1,6 +1,4 @@
 
-@import "tw-animate-css";
-
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -9,11 +7,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-white text-gray-900 font-sans;
-  }
-}
 
 @theme inline {
 
@@ -153,6 +146,16 @@
   --sidebar-border: oklch(0.922 0 0);
 
   --sidebar-ring: oklch(0.708 0 0);
+
+  --hemp-green: #4CAF50;
+
+  --urgent-orange: #FF6B35;
+
+  --deep-blue: #1E3A8A;
+
+  --success-green: #10B981;
+
+  --warning-red: #EF4444;
 }
 
 .dark {
@@ -218,13 +221,25 @@
   --sidebar-border: oklch(1 0 0 / 10%);
 
   --sidebar-ring: oklch(0.556 0 0);
+
+  --hemp-green: #4CAF50;
+
+  --urgent-orange: #FF6B35;
+
+  --deep-blue: #1E3A8A;
+
+  --success-green: #10B981;
+
+  --warning-red: #EF4444;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: rgb(var(--ring) / 0.5);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
