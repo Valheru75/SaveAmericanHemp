@@ -44,6 +44,27 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
     return /^\d{5}$/.test(zip)
   }
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+    if (errors.email) {
+      setErrors(prev => ({ ...prev, email: undefined }))
+    }
+  }
+
+  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setZipCode(e.target.value.replace(/\D/g, ''))
+    if (errors.zipCode) {
+      setErrors(prev => ({ ...prev, zipCode: undefined }))
+    }
+  }
+
+  const handleRoleChange = (value: string) => {
+    setRole(value as UserRole)
+    if (errors.role) {
+      setErrors(prev => ({ ...prev, role: undefined }))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -82,12 +103,12 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
         <CardTitle className="text-2xl md:text-3xl text-center">
           Find Your Representatives
         </CardTitle>
-        <p className="text-center text-gray-600 mt-2">
+        <p id="form-description" className="text-center text-gray-600 mt-2">
           Enter your information to see who represents you and send them a message
         </p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" aria-describedby="form-description">
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email">Email Address *</Label>
@@ -96,12 +117,17 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
               type="email"
               placeholder="your.email@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               disabled={isLoading}
               className={errors.email ? 'border-red-500' : ''}
+              autoComplete="email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
             />
             {errors.email && (
-              <p className="text-sm text-red-500">{errors.email}</p>
+              <p id="email-error" className="text-sm text-red-500" role="alert">
+                {errors.email}
+              </p>
             )}
           </div>
 
@@ -111,15 +137,22 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
             <Input
               id="zipCode"
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               placeholder="12345"
               maxLength={5}
               value={zipCode}
-              onChange={(e) => setZipCode(e.target.value.replace(/\D/g, ''))}
+              onChange={handleZipChange}
               disabled={isLoading}
               className={errors.zipCode ? 'border-red-500' : ''}
+              autoComplete="postal-code"
+              aria-invalid={!!errors.zipCode}
+              aria-describedby={errors.zipCode ? 'zipCode-error' : undefined}
             />
             {errors.zipCode && (
-              <p className="text-sm text-red-500">{errors.zipCode}</p>
+              <p id="zipCode-error" className="text-sm text-red-500" role="alert">
+                {errors.zipCode}
+              </p>
             )}
           </div>
 
@@ -128,12 +161,14 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
             <Label htmlFor="role">I am a... *</Label>
             <Select
               value={role}
-              onValueChange={(value) => setRole(value as UserRole)}
+              onValueChange={handleRoleChange}
               disabled={isLoading}
             >
               <SelectTrigger
                 id="role"
                 className={errors.role ? 'border-red-500' : ''}
+                aria-invalid={!!errors.role}
+                aria-describedby={errors.role ? 'role-error' : undefined}
               >
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
@@ -146,7 +181,9 @@ export function ActionForm({ onSubmit, isLoading = false }: ActionFormProps) {
               </SelectContent>
             </Select>
             {errors.role && (
-              <p className="text-sm text-red-500">{errors.role}</p>
+              <p id="role-error" className="text-sm text-red-500" role="alert">
+                {errors.role}
+              </p>
             )}
           </div>
 
