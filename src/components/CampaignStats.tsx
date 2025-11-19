@@ -18,6 +18,7 @@ export function CampaignStats() {
   }
 
   if (error) {
+    console.error('Campaign stats error:', error)
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="pt-6">
@@ -53,7 +54,11 @@ export function CampaignStats() {
               {totalActions.toLocaleString()} / {GOAL.toLocaleString()}
             </span>
           </div>
-          <Progress value={progressPercent} className="h-3" />
+          <Progress
+            value={progressPercent}
+            className="h-3 [&>div]:bg-hempGreen"
+            aria-label={`Campaign progress: ${progressPercent.toFixed(1)}% of 50,000 actions goal`}
+          />
           <p className="text-xs text-gray-500 text-center">
             {progressPercent.toFixed(1)}% to 50,000 actions
           </p>
