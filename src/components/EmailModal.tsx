@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,14 @@ export function EmailModal({
   const [emailBody, setEmailBody] = useState(emailTemplate.body)
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Sync email body when template changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setEmailBody(emailTemplate.body)
+      setError(null)
+    }
+  }, [emailTemplate.body, isOpen])
 
   const handleSend = async () => {
     setIsSending(true)
@@ -66,6 +74,27 @@ export function EmailModal({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Lawmaker Information */}
+        <div className="bg-blue-50 p-3 rounded-md space-y-1">
+          <p className="text-sm">
+            <span className="font-semibold">Chamber:</span>{' '}
+            {lawmaker.chamber === 'senate' ? 'Senate' : 'House'}
+          </p>
+          <p className="text-sm">
+            <span className="font-semibold">State:</span> {lawmaker.state}
+          </p>
+          {lawmaker.district && (
+            <p className="text-sm">
+              <span className="font-semibold">District:</span> {lawmaker.district}
+            </p>
+          )}
+          {lawmaker.party && (
+            <p className="text-sm">
+              <span className="font-semibold">Party:</span> {lawmaker.party}
+            </p>
+          )}
+        </div>
+
         <div className="space-y-4">
           {/* Subject Line (Read-only) */}
           <div>
@@ -82,7 +111,7 @@ export function EmailModal({
             <Label htmlFor="body" className="text-base font-semibold">
               Message
             </Label>
-            <p className="text-sm text-gray-600 mb-2">
+            <p id="body-help-text" className="text-sm text-gray-600 mb-2">
               You can personalize this message if you'd like
             </p>
             <Textarea
@@ -92,6 +121,8 @@ export function EmailModal({
               rows={15}
               className="font-mono text-sm"
               disabled={isSending}
+              aria-label="Email message body"
+              aria-describedby="body-help-text"
             />
           </div>
 
@@ -113,7 +144,7 @@ export function EmailModal({
           </Button>
           <Button
             onClick={handleSend}
-            disabled={isSending}
+            disabled={isSending || !emailBody.trim()}
             className="bg-hempGreen hover:bg-hempGreen/90 text-white font-semibold"
           >
             {isSending ? 'Sending...' : 'Send Email'}
