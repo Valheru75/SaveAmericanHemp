@@ -13,7 +13,8 @@ export async function lookupLawmakers(zipCode: string): Promise<LawmakerLookupRe
   })
 
   if (error) {
-    throw new Error(`Failed to lookup lawmakers: ${error.message}`)
+    const errorMessage = error.message || error.toString() || 'Unknown error occurred'
+    throw new Error(`Failed to lookup lawmakers: ${errorMessage}`)
   }
 
   return data as LawmakerLookupResult
