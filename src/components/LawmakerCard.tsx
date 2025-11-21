@@ -9,13 +9,15 @@ interface LawmakerCardProps {
 }
 
 export function LawmakerCard({ lawmaker, onSendEmail }: LawmakerCardProps) {
-  const partyColor =
-    lawmaker.party === 'Democratic'
-      ? 'bg-blue-500'
-      : lawmaker.party === 'Republican'
-      ? 'bg-red-500'
-      : 'bg-gray-500'
+  const getPartyColor = (party?: string): string => {
+    if (!party) return '#6b7280' // gray-500
+    const normalized = party.toLowerCase()
+    if (normalized.includes('democrat')) return '#3b82f6' // blue-500
+    if (normalized.includes('republican')) return '#ef4444' // red-500
+    return '#6b7280' // gray-500
+  }
 
+  const partyColor = getPartyColor(lawmaker.party)
   const chamberLabel = lawmaker.chamber === 'senate' ? 'Senator' : 'Representative'
 
   return (
@@ -25,12 +27,16 @@ export function LawmakerCard({ lawmaker, onSendEmail }: LawmakerCardProps) {
           {lawmaker.photo_url ? (
             <img
               src={lawmaker.photo_url}
-              alt={lawmaker.name}
+              alt={`Photo of ${lawmaker.name}`}
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold">
-              {lawmaker.name.charAt(0)}
+            <div
+              className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold"
+              aria-label={`${lawmaker.name} photo placeholder`}
+              role="img"
+            >
+              {lawmaker.name?.charAt(0) || '?'}
             </div>
           )}
         </div>
@@ -40,7 +46,10 @@ export function LawmakerCard({ lawmaker, onSendEmail }: LawmakerCardProps) {
             {chamberLabel} • {lawmaker.state}
           </p>
           {lawmaker.party && (
-            <Badge className={`${partyColor} text-white mt-1`}>
+            <Badge
+              className="text-white mt-1"
+              style={{ backgroundColor: partyColor }}
+            >
               {lawmaker.party}
             </Badge>
           )}
@@ -72,7 +81,7 @@ export function LawmakerCard({ lawmaker, onSendEmail }: LawmakerCardProps) {
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              Official Website →
+              Contact Form →
             </a>
           </div>
         )}
@@ -83,7 +92,10 @@ export function LawmakerCard({ lawmaker, onSendEmail }: LawmakerCardProps) {
           onClick={() => onSendEmail(lawmaker)}
           className="w-full bg-hempGreen hover:bg-hempGreen/90 text-white font-semibold"
         >
-          Send Email to {lawmaker.name.split(' ')[0]}
+          <span className="hidden sm:inline">
+            Send Email to {lawmaker.name?.split(' ')[0] || 'Lawmaker'}
+          </span>
+          <span className="sm:hidden">Send Email</span>
         </Button>
       </CardFooter>
     </Card>
