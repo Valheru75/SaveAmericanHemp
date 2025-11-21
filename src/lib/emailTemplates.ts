@@ -5,13 +5,46 @@ export interface EmailTemplate {
   body: string
 }
 
+/**
+ * Extracts the last name from a full name, handling common suffixes
+ * @param fullName - The full name of the lawmaker
+ * @returns The last name
+ */
+function getLastName(fullName: string): string {
+  const parts = fullName.trim().split(' ')
+
+  if (parts.length === 0) {
+    return 'Representative' // Fallback
+  }
+
+  if (parts.length === 1) {
+    return parts[0]
+  }
+
+  // Remove common suffixes (Jr., Sr., III, etc.)
+  const suffixes = ['Jr.', 'Sr.', 'III', 'II', 'IV', 'V', 'Jr', 'Sr']
+  const lastPart = parts[parts.length - 1]
+
+  if (suffixes.includes(lastPart)) {
+    // Return second-to-last part if last part is a suffix
+    return parts.length > 1 ? parts[parts.length - 2] : parts[0]
+  }
+
+  return lastPart
+}
+
 export function getEmailTemplate(
   role: UserRole,
   lawmaker: Lawmaker,
   userName?: string
 ): EmailTemplate {
+  // Validate required fields
+  if (!lawmaker.name || !lawmaker.state) {
+    throw new Error('Lawmaker name and state are required for email template generation')
+  }
+
   const honorific = lawmaker.chamber === 'senate' ? 'Senator' : 'Representative'
-  const greeting = `Dear ${honorific} ${lawmaker.name.split(' ').pop()},`
+  const greeting = `Dear ${honorific} ${getLastName(lawmaker.name)},`
 
   const templates: Record<UserRole, EmailTemplate> = {
     business_owner: {
